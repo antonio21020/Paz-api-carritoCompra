@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import tech.cognity.ventas.entity.carritoCompra;
 
 @Repository
-public interface CarritoCompraRepository extends JpaRepository<carritoCompra, Integer>{
-	List<carritoCompra> findByIdContaining(Integer id,Pageable page);
+public interface CarritoCompraRepository extends JpaRepository <carritoCompra, Integer>{
+	List<carritoCompra> findByNombreContaining(String nombre,Pageable page);
+	carritoCompra findByNombre(String nombre);
 }

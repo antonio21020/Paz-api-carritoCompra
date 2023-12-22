@@ -1,8 +1,11 @@
 package tech.cognity.ventas.converter;
 
+import org.springframework.stereotype.Component;
+
 import tech.cognity.ventas.DTO.CarritoComprasDTO;
 import tech.cognity.ventas.entity.carritoCompra;
 
+@Component
 public class CarritoCompraConverter extends AbstractConverter<carritoCompra, CarritoComprasDTO>{
 
 	@Override
@@ -13,6 +16,7 @@ public class CarritoCompraConverter extends AbstractConverter<carritoCompra, Car
 				.nombre(entity.getNombre())
 				.cantidad(entity.getCantidad())
 				.totalCompra(entity.getTotalCompra())
+				.activo(entity.getActivo())
 				.build();
 	}
 
@@ -24,6 +28,7 @@ public class CarritoCompraConverter extends AbstractConverter<carritoCompra, Car
 				.nombre(dto.getNombre())
 				.cantidad(dto.getCantidad())
 				.totalCompra(dto.getTotalCompra())
+				.activo(dto.getActivo())
 				.build();
 	}
 

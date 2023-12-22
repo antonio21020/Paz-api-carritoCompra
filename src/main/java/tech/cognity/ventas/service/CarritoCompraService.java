@@ -13,5 +13,4 @@ public interface CarritoCompraService {
 	public carritoCompra save(carritoCompra carritocompra);
 	public carritoCompra update(carritoCompra carritocompra);
 	public void delete(int id);
-	List<carritoCompra> findById(Integer Id, Pageable page);
 }

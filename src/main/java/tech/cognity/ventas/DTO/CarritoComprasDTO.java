@@ -16,4 +16,5 @@ public class CarritoComprasDTO {
 	private String nombre;
 	private int cantidad;
 	private double totalCompra;
+	private Boolean activo;
 }

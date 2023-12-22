@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tech.cognity.ventas.DTO.CarritoComprasDTO;
+import tech.cognity.ventas.converter.CarritoCompraConverter;
 import tech.cognity.ventas.entity.carritoCompra;
 import tech.cognity.ventas.service.CarritoCompraService;
+import tech.cognity.ventas.utils.WrapperResponse;
 
 @RestController
 @RequestMapping("/carritoCompra")
@@ -26,52 +29,60 @@ public class CarritoComprasController {
 	@Autowired
 	private CarritoCompraService service;
 	
+	@Autowired
+	private CarritoCompraConverter carritoConverter;
 	@GetMapping()
-	public ResponseEntity<List<carritoCompra>> findAll(
-			@RequestParam(value = "id", required = false,defaultValue = "")Integer id,
+	public ResponseEntity<List<CarritoComprasDTO>> findAll(
+			@RequestParam(value = "nombre", required = false,defaultValue = "")String nombre,
 			@RequestParam(value = "offset", required = false,defaultValue = "0")int pageNumber,
 			@RequestParam(value = "limit", required = false,defaultValue = "5")int pageSize
 			
 			){
 		Pageable page = PageRequest.of(pageNumber, pageSize);
 		List<carritoCompra> carritocompra;
-		if(id==null) {
+		if(nombre==null) {
 			carritocompra=service.findAll(page);
 		}else {
-			carritocompra=service.findById(id, page);
+			carritocompra=service.findByNombre(nombre, page);
 		}
 		if(carritocompra.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
-		return ResponseEntity.ok(carritocompra);
+		List<CarritoComprasDTO> carritosDTO = carritoConverter.fromEntity(carritocompra);
+        return new WrapperResponse(true,"success", carritosDTO).createResponse(HttpStatus.OK);
 	}
 	@GetMapping(value="/{id}")
-	public ResponseEntity<carritoCompra> findById(@PathVariable("id")int id){
-		carritoCompra carritocompra = service.findById(id);
-		if(carritocompra==null) {
+	public ResponseEntity<WrapperResponse<CarritoComprasDTO>> findById(@PathVariable("id") int id){
+		carritoCompra carritos = service.findById(id);
+		if (carritos ==null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(carritocompra);
+		CarritoComprasDTO carritosDTO=carritoConverter.fromEntity(carritos);
+		return new WrapperResponse<CarritoComprasDTO>(true,"success", carritosDTO).createResponse(HttpStatus.OK);
 	}
-	@PostMapping()
-	public ResponseEntity<carritoCompra> create(@RequestBody carritoCompra carritocompra){
-		carritoCompra registro=service.save(carritocompra);
-		return ResponseEntity.status(HttpStatus.CREATED).body(registro);
+    
+    @PostMapping
+	public ResponseEntity<CarritoComprasDTO> save(@RequestBody CarritoComprasDTO carritoDTO){
+    	carritoCompra carritoss = service.save(carritoConverter.fromDTO(carritoDTO));
+    	CarritoComprasDTO carritosDTO = carritoConverter.fromEntity(carritoss);
+		return new WrapperResponse(true,"success", carritosDTO).createResponse(HttpStatus.CREATED);
 	}
-	
-	@PutMapping(value="/{id}")
-	public ResponseEntity<carritoCompra> update(@PathVariable("id")int id,@RequestBody carritoCompra carritocompra){
-		carritoCompra registro=service.update(carritocompra);
-		if(registro==null) {
+    
+    @PutMapping(value = "/{id}")
+	public ResponseEntity<CarritoComprasDTO> update(@PathVariable("id") int id, 
+											@RequestBody CarritoComprasDTO carritosDTO) {
+
+		carritoCompra registro = service.update(carritoConverter.fromDTO(carritosDTO));
+		if (registro == null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(registro);
+		CarritoComprasDTO registroDTO = carritoConverter.fromEntity(registro);
+		return new WrapperResponse(true,"Succes",registroDTO).createResponse(HttpStatus.OK);
 	}
-	
 	@DeleteMapping(value="/{id}")
-	public ResponseEntity<carritoCompra> delete(@PathVariable("id")int id){
+	public ResponseEntity<CarritoComprasDTO> delete(@PathVariable("id") int id){
 		service.delete(id);
-		return ResponseEntity.ok(null);
+		return new WrapperResponse(true,"success", null).createResponse(HttpStatus.OK);
 	}
 	
 	
